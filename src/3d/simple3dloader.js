@@ -71,12 +71,12 @@ function simple3dloader() {
 
         scene.add(camera);
 
-        var grid = new THREE.GridHelper(5, 50, 0xff0000, 0x555555);
+        var grid = new THREE.GridHelper(5, 50, 0xc10015, 0x888888);
         grid.rotateOnAxis(new THREE.Vector3(1, 0, 0), 90 * (Math.PI / 180));
         scene.add(grid);
 
         renderer = new THREE.WebGLRenderer({ antialias: true, canvas: canvas });
-        renderer.setClearColor(0x333333);
+        renderer.setClearColor(0xffffff);
         renderer.setPixelRatio(window.devicePixelRatio);
         onWindowResize();
         onWindowResize();
@@ -114,10 +114,14 @@ function simple3dloader() {
 
     function onWindowResize() {
         camera.updateProjectionMatrix();
+        canvas.style.width = "0";
+        canvas.style.height = "0";
         canvas.style.width = "100%";
         canvas.style.height = "600px";
-        camera.aspect = canvas.offsetWidth / 600;
-        renderer.setSize(canvas.offsetWidth, 600);
+        var size = Math.min(canvas.offsetWidth, 600);
+        camera.aspect = 1;
+
+        renderer.setSize(size, size);
 
         render();
     }
