@@ -16,7 +16,7 @@
                     />
                 </div>
                 <div class="col-4 q-pa-sm" style="text-align:center">
-                    <q-btn @click="updateView" color="primary" style="width:100%">New</q-btn>
+                    <q-btn @click="newManifold" color="primary" style="width:100%">New</q-btn>
                 </div>
                 <div class="text-subtitle2 q-pa-sm col-12">Name</div>
                 <div class="col-12 q-pa-sm">
@@ -71,10 +71,7 @@
                     />
                 </div>
                 <div class="col-4 q-pa-sm" style="text-align:center">
-                    <q-btn @click="saveManifold" color="primary" style="width:100%">Save</q-btn>
-                </div>
-                <div class="col-4 q-pa-sm" style="text-align:center">
-                    <q-btn @click="updateView" color="primary" style="width:100%">Show</q-btn>
+                    <q-btn @click="updateView" color="primary" style="width:100%">Update</q-btn>
                 </div>
                 <div class="col-4 q-pa-sm" style="text-align:center;padding-top:15px">
                     <a
@@ -96,36 +93,12 @@
 
 <script>
 import simple3dloader from "./../3d/simple3dloader";
-import tunnlejs from "./../3d/tunnle";
+import manifoldmanager from "./../3d/manifoldmanager";
 export default {
-    name: "PageHome",
+    name: "ManifoldBuilder",
     data() {
         return {
-            manifolds: [
-                {
-                    name: "None",
-                    id: 0,
-                    outerWallDefinition: ``,
-                    innerWallDefinition: ``,
-                    parameters: [
-                        { id: "hS", name: "# Horizontal steps", value: 10 },
-                        { id: "vS", name: "# Vertical steps", value: 10 }
-                    ],
-                    otherHoles: []
-                },
-                {
-                    name: "HerringboneGear",
-                    id: 1,
-                    outerWallDefinition: `x = (i%5<=2?8:10)*sin(2*i*PI/(hS)+(h<(vS/2)?h:(vS-h))/(2*PI));\ny = h;\nz = (i%5<=2?8:10)*cos(2*i*PI/(hS)+(h<(vS/2)?h:(vS-h))/(2*PI));`,
-                    innerWallDefinition: `x = 7*sin(2*i*PI/(hS)+(h<(vS/2)?h:(vS-h))/(2*PI));\ny = h;\nz = 7*cos(2*i*PI/(hS)+(h<(vS/2)?h:(vS-h))/(2*PI));`,
-                    parameters: [
-                        { id: "hS", name: "# Horizontal steps", value: 100 },
-                        { id: "vS", name: "# Vertical steps", value: 10 },
-                        { id: "test", name: "Test", value: 10 }
-                    ],
-                    otherHoles: []
-                }
-            ],
+            manifolds: manifoldmanager.getAllManifolds(),
             downloadString: "",
             parametersBasic: [
                 { id: "hS", name: "# Horizontal steps", value: 10 },
@@ -135,62 +108,40 @@ export default {
         };
     },
     methods: {
-        getSurfaceWallFunction: function() {
-            var f = Function(
-                "wallDefinition",
-                ...this.parameters.map(x => x.id),
-                `
-
-            var sin = Math.sin;
-            var cos = Math.cos;
-            var PI = Math.PI;
-            return function(i, h) {
-                function random() {
-                    var x = Math.sin(i * hS + h) * 10000;
-                    return x - Math.floor(x);
-                }
-                var x=0,y=0,z=0;eval(wallDefinition);return { x, y, z };};`
-            );
-
-            return f;
+        newManifold() {
+            var newManifold = {
+                name: "NewManifold",
+                id: this.manifolds.length + 1,
+                outerWallDefinition: ``,
+                innerWallDefinition: ``,
+                parameters: [{ id: "hS", value: 10 }, { id: "vS", value: 10 }]
+            };
+            this.manifolds.push(newManifold);
         },
         updateView: function() {
+            this.saveManifold();
             var loader = new simple3dloader();
             var canvas = document.getElementById("canv");
             loader.init(canvas);
-            this.downloadString = tunnlejs.createMesh([
-                tunnlejs.createMeshPart(
-                    this.holes,
-                    this.outerWallFunction,
-                    this.innerWallFunction,
-                    this.getParameter("hS").value,
-                    this.getParameter("vS").value
-                )
+            this.downloadString = manifoldmanager.createManifold([
+                manifoldmanager.createManifoldPart(this.selectedInner)
             ]);
             loader.setMesh(this.downloadString);
         },
-        getParameter(id) {
-            return this.selectedManifold.parameters.find(x => x.id == id);
-        },
         saveManifold() {
-            var newManifold = {
-                name: this.name,
-                id: 1,
-                outerWallDefinition: `x = (i%5<=2?8:10)*sin(2*i*PI/(hS)+(h<(vS/2)?h:(vS-h))/(2*PI));\ny = h;\nz = (i%5<=2?8:10)*cos(2*i*PI/(hS)+(h<(vS/2)?h:(vS-h))/(2*PI));`,
-                innerWallDefinition: `x = 7*sin(2*i*PI/(hS)+(h<(vS/2)?h:(vS-h))/(2*PI));\ny = h;\nz = 7*cos(2*i*PI/(hS)+(h<(vS/2)?h:(vS-h))/(2*PI));`,
-                parameters: [
-                    { id: "hS", value: 100 },
-                    { id: "vS", value: 10 },
-                    { id: "test", name: "Test", value: 10 }
-                ],
-                otherHoles: []
-            };
+            var realManifold = this.manifolds.find(
+                x => x.id == this.selectedInner
+            );
+            var selectedManifold = this.selectedManifold;
+            for (var param in selectedManifold) {
+                realManifold[param] = JSON.parse(
+                    JSON.stringify(selectedManifold[param])
+                );
+            }
+            localStorage.setItem("manifolds", JSON.stringify(this.manifolds));
         }
     },
     computed: {
-        parameters() {
-            return this.selectedManifold.parameters;
-        },
         selected: {
             get() {
                 return this.selectedInner;
@@ -202,30 +153,12 @@ export default {
         },
         selectedManifold: {
             get() {
-                return this.manifolds[this.selectedInner];
+                return JSON.parse(
+                    JSON.stringify(
+                        this.manifolds.find(x => x.id == this.selectedInner)
+                    )
+                );
             }
-        },
-        innerWallFunction() {
-            return this.getSurfaceWallFunction()(
-                this.selectedManifold.innerWallDefinition,
-                ...this.parameters.map(x => x.value)
-            );
-        },
-        outerWallFunction() {
-            return this.getSurfaceWallFunction()(
-                this.selectedManifold.outerWallDefinition,
-                ...this.parameters.map(x => x.value)
-            );
-        },
-        holes() {
-            return [
-                {
-                    top: this.getParameter("vS").value - 1,
-                    left: 0,
-                    bottom: 0,
-                    right: this.getParameter("hS").value - 1
-                }
-            ];
         }
     },
     mounted() {

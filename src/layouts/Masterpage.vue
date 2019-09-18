@@ -14,7 +14,7 @@
                     </q-item-section>
                     <q-item-section>Benutzer</q-item-section>
                 </q-item>
-                <q-item clickable v-ripple to="/group" class="text-grey-10">
+                <q-item clickable v-ripple to="/sceneBuilder" class="text-grey-10">
                     <q-item-section avatar>
                         <q-icon name="grid_on" />
                     </q-item-section>
