@@ -36,7 +36,8 @@ export default {
     data() {
         return {
             manifolds: manifoldmanager.getAllManifolds(),
-            code: ""
+            code:
+                "HerringboneGear(100,10,0)\nHerringboneGear(50,10,10)\nHerringboneGear(25,10,20)"
         };
     },
     methods: {
