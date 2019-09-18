@@ -1,6 +1,24 @@
 <template>
     <div class="row">
-        <div class="col-4">SCENE</div>
+        <div class="col-4">
+            <div class="row">
+                <div class="text-subtitle2 q-pa-sm col-12">Code</div>
+                <div class="col-12 q-pa-sm">
+                    <q-input
+                        style="font-family:monospace"
+                        filled
+                        square
+                        stack-label
+                        type="textarea"
+                        v-model="code"
+                        dense
+                    />
+                </div>
+                <div class="col-4 q-pa-sm" style="text-align:center">
+                    <q-btn @click="parseCode" color="primary" style="width:100%">Generate</q-btn>
+                </div>
+            </div>
+        </div>
         <div class="col-8 q-pa-sm">
             <canvas id="canv" style="width:100%;height:600px"></canvas>
         </div>
@@ -18,66 +36,25 @@ export default {
     data() {
         return {
             manifolds: manifoldmanager.getAllManifolds(),
-            downloadString: "",
-            parametersBasic: [
-                { id: "hS", name: "# Horizontal steps", value: 10 },
-                { id: "vS", name: "# Vertical steps", value: 10 }
-            ],
-            selectedInner: 0
+            code: ""
         };
     },
     methods: {
-        newManifold() {
-            var newManifold = {
-                name: "NewManifold",
-                id: this.manifolds.length + 1,
-                outerWallDefinition: ``,
-                innerWallDefinition: ``,
-                parameters: [{ id: "hS", value: 10 }, { id: "vS", value: 10 }]
-            };
-            this.manifolds.push(newManifold);
-        },
         updateView: function() {
-            this.saveManifold();
             var loader = new simple3dloader();
             var canvas = document.getElementById("canv");
             loader.init(canvas);
             this.downloadString = manifoldmanager.createManifold([
-                manifoldmanager.createManifoldPart(this.selectedInner)
+                manifoldmanager.createManifoldPart(0)
             ]);
             loader.setMesh(this.downloadString);
         },
-        saveManifold() {
-            var realManifold = this.manifolds.find(
-                x => x.id == this.selectedInner
-            );
-            var selectedManifold = this.selectedManifold;
-            for (var param in selectedManifold) {
-                realManifold[param] = JSON.parse(
-                    JSON.stringify(selectedManifold[param])
-                );
-            }
-            localStorage.setItem("manifolds", JSON.stringify(this.manifolds));
-        }
-    },
-    computed: {
-        selected: {
-            get() {
-                return this.selectedInner;
-            },
-            set(selection) {
-                this.selectedInner = selection;
-                this.updateView();
-            }
-        },
-        selectedManifold: {
-            get() {
-                return JSON.parse(
-                    JSON.stringify(
-                        this.manifolds.find(x => x.id == this.selectedInner)
-                    )
-                );
-            }
+        parseCode() {
+            var loader = new simple3dloader();
+            var canvas = document.getElementById("canv");
+            loader.init(canvas);
+            this.downloadString = manifoldmanager.parseCode(this.code);
+            loader.setMesh(this.downloadString);
         }
     },
     mounted() {

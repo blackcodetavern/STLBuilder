@@ -1,5 +1,6 @@
 import tunnlejs from "./../3d/tunnle";
-var manifoldmanager = (function () {
+var manifoldmanager = (function() {
+    var me = {};
     var allManifolds = JSON.parse(localStorage.getItem("manifolds")) || [
         {
             name: "None",
@@ -22,15 +23,13 @@ var manifoldmanager = (function () {
                 { id: "test", name: "Test", value: 10 }
             ]
         }
-    ]
+    ];
 
-    var getAllManifolds = function () {
-        return allManifolds
-    }
+    me.getAllManifolds = function() {
+        return allManifolds;
+    };
 
-
-
-    var getSurfaceWallFunction = function (parameters) {
+    me.getSurfaceWallFunction = function(parameters) {
         var f = Function(
             "wallDefinition",
             parameters.map(x => x.id),
@@ -48,14 +47,19 @@ var manifoldmanager = (function () {
         );
 
         return f;
-    }
+    };
 
-    var createManifold = function (manifoldParts) {
-        return tunnlejs.createMesh(manifoldParts)
-    }
+    me.parseCode = function(code) {
+        code = "me.createManifold([" + code.split("\n").join(",") + "])";
+        return eval(code);
+    };
 
-    var createManifoldPart = function (id) {
-        var manifold = getAllManifolds().find(x => x.id == id);
+    me.createManifold = function(manifoldParts) {
+        return tunnlejs.createMesh(manifoldParts);
+    };
+
+    me.createManifoldPart = function(id) {
+        var manifold = me.getAllManifolds().find(x => x.id == id);
         return tunnlejs.createMeshPart(
             [
                 {
@@ -65,24 +69,65 @@ var manifoldmanager = (function () {
                     right: manifold.parameters.find(x => x.id == "hS").value - 1
                 }
             ],
-            getSurfaceWallFunction(manifold.parameters)(
+            me.getSurfaceWallFunction(manifold.parameters)(
                 manifold.outerWallDefinition,
                 ...manifold.parameters.map(x => x.value)
             ),
-            getSurfaceWallFunction(manifold.parameters)(
+            me.getSurfaceWallFunction(manifold.parameters)(
                 manifold.innerWallDefinition,
                 ...manifold.parameters.map(x => x.value)
             ),
             manifold.parameters.find(x => x.id == "hS").value,
             manifold.parameters.find(x => x.id == "vS").value
-        )
+        );
+    };
+
+    me.createManifoldByNameAndParameters = function(
+        name,
+        parameters,
+        parameterNames
+    ) {
+        var manifold = me.getAllManifolds().find(x => x.name == name);
+        var paramNames = parameterNames.map(x => ({
+            id: x
+        }));
+        return tunnlejs.createMeshPart(
+            [
+                {
+                    top: parameters[1] - 1,
+                    left: 0,
+                    bottom: 0,
+                    right: parameters[0] - 1
+                }
+            ],
+            me.getSurfaceWallFunction(paramNames)(
+                manifold.outerWallDefinition,
+                ...parameters
+            ),
+            me.getSurfaceWallFunction(paramNames)(
+                manifold.innerWallDefinition,
+                ...parameters
+            ),
+            parameters[0],
+            parameters[1]
+        );
+    };
+
+    for (var i = 0; i < allManifolds.length; i++) {
+        var currentManifold = allManifolds[i];
+        window[currentManifold.name] = Function(
+            currentManifold.parameters.map(x => x.id),
+            `return this.createManifoldByNameAndParameters("` +
+                currentManifold.name +
+                `", [` +
+                currentManifold.parameters.map(x => x.id).join(",") +
+                `],["` +
+                currentManifold.parameters.map(x => x.id).join('","') +
+                `"]);`
+        ).bind(me);
     }
 
-    return {
-        getAllManifolds,
-        createManifoldPart,
-        createManifold
-    };
+    return me;
 })();
 
 export default manifoldmanager;
