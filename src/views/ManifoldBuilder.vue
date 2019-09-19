@@ -32,7 +32,7 @@
                 <div class="text-subtitle2 q-pa-sm col-12">Parameters</div>
                 <div
                     class="col-6 q-pa-sm"
-                    v-for="parameter in selectedManifold.parameters"
+                    v-for="(parameter, index) in selectedManifold.parameters"
                     v-bind:key="parameter.id"
                 >
                     <q-input
@@ -40,11 +40,17 @@
                         square
                         stack-label
                         v-model="parameter.value"
-                        :label="parameter.name"
+                        :label="parameter.name+'('+parameter.id+')'"
                         dense
-                    />
+                    >
+                        <template v-slot:append>
+                            <q-btn round dense flat icon="delete" @click="deleteParameter(index)" />
+                        </template>
+                    </q-input>
                 </div>
-
+                <div class="col-12 q-pa-sm">
+                    <q-btn @click="newParameter" color="primary">New Parameter</q-btn>
+                </div>
                 <div class="text-subtitle2 q-pa-sm col-12">Inner Wall</div>
                 <div class="col-12 q-pa-sm">
                     <q-input
@@ -81,6 +87,24 @@
                     >Download</a>
                 </div>
             </div>
+            <q-dialog v-model="newParamDialog" persistent>
+                <q-card style="min-width: 400px">
+                    <q-card-section>
+                        <div class="text-h6">Your address</div>
+                    </q-card-section>
+
+                    <q-card-section>
+                        <q-input label="Parameter name" v-model="newParam.id" autofocus />
+                        <q-input label="Parameter description" v-model="newParam.name" />
+                        <q-input label="Parameter value" v-model="newParam.value" />
+                    </q-card-section>
+
+                    <q-card-actions align="right" class="text-primary">
+                        <q-btn flat label="Cancel" v-close-popup />
+                        <q-btn flat label="Add" v-close-popup @click="saveParameter" />
+                    </q-card-actions>
+                </q-card>
+            </q-dialog>
         </div>
         <div class="col-8 q-pa-sm">
             <canvas id="canv" style="width:100%;height:600px"></canvas>
@@ -104,17 +128,42 @@ export default {
                 { id: "hS", name: "# Horizontal steps", value: 10 },
                 { id: "vS", name: "# Vertical steps", value: 10 }
             ],
-            selectedInner: 0
+            selectedInner: 0,
+            selectedManifold: {},
+            newParamDialog: false,
+            newParam: {
+                id: "",
+                name: "",
+                value: 777
+            }
         };
     },
     methods: {
+        newParameter() {
+            this.newParamDialog = true;
+            this.newParam = {
+                id: "param" + this.selectedManifold.parameters.length + 1,
+                name: "Cool Param",
+                value: 777
+            };
+        },
+        saveParameter() {
+            this.selectedManifold.parameters.push(this.newParam);
+            this.newParamDialog = false;
+        },
+        deleteParameter(index) {
+            this.selectedManifold.parameters.splice(index, 1);
+        },
         newManifold() {
             var newManifold = {
                 name: "NewManifold",
                 id: this.manifolds.length + 1,
                 outerWallDefinition: ``,
                 innerWallDefinition: ``,
-                parameters: [{ id: "hS", value: 10 }, { id: "vS", value: 10 }]
+                parameters: [
+                    { id: "hS", name: "# Horizontal steps", value: 10 },
+                    { id: "vS", name: "# Vertical steps", value: 10 }
+                ]
             };
             this.manifolds.push(newManifold);
         },
@@ -139,6 +188,7 @@ export default {
                 );
             }
             localStorage.setItem("manifolds", JSON.stringify(this.manifolds));
+            manifoldmanager.rebuildLanguage();
         }
     },
     computed: {
@@ -148,16 +198,12 @@ export default {
             },
             set(selection) {
                 this.selectedInner = selection;
-                this.updateView();
-            }
-        },
-        selectedManifold: {
-            get() {
-                return JSON.parse(
+                this.selectedManifold = JSON.parse(
                     JSON.stringify(
                         this.manifolds.find(x => x.id == this.selectedInner)
                     )
                 );
+                this.updateView();
             }
         }
     },

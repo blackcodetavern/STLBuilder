@@ -1,5 +1,14 @@
 # stlbuilder
 
+
+# ToDo
+
+- Download big STLs via Blob
+- Code-Manifolds which have parameters and code which creates basic manifolds
+- When executing code of a manifold it has to add the manifold to an array instead of returning
+the part
+
+
 ## Project setup
 ```
 npm install

@@ -1,16 +1,16 @@
 import simplelinearalgebra from "./simplelinearalgebra";
 import simplestl from "./simplestl";
-var tunnlejs = (function() {
-    var createTunnleBySurface = function(config) {
+var tunnlejs = (function () {
+    var createTunnleBySurface = function (config) {
         //Outer and inner wall of the tunnle
 
-        var surfaceWallFunction = function(
+        var surfaceWallFunction = function (
             surface,
             radius,
             height,
             horizontalSteps
         ) {
-            return function(i, h) {
+            return function (i, h) {
                 var x =
                     surface[h] *
                     radius *
@@ -65,7 +65,7 @@ var tunnlejs = (function() {
         return createTunnle(outer, inner);
     };
 
-    var createMeshPart = function(
+    var createMeshPart = function (
         holes,
         outerWallFunction,
         innerWallFunction,
@@ -100,7 +100,7 @@ var tunnlejs = (function() {
         return obj;
     };
 
-    var createMesh = function(arrayOfMeshParts) {
+    var createMesh = function (arrayOfMeshParts) {
         var obj = arrayOfMeshParts[0];
         for (var i = 1; i < arrayOfMeshParts.length; i++) {
             obj.arrayOfTriangles = obj.arrayOfTriangles.concat(
@@ -111,7 +111,7 @@ var tunnlejs = (function() {
         return simplestl.getFullTextSTL(obj);
     };
 
-    var createClosures = function(outerClosures, innerClosures) {
+    var createClosures = function (outerClosures, innerClosures) {
         var triangles = [];
         for (var c = 0; c < outerClosures.length; c++) {
             var outerVertices = outerClosures[c];
@@ -138,7 +138,7 @@ var tunnlejs = (function() {
         return triangles;
     };
     //hole: {top:0,left:0,bottom:resolutionVertical-1,right:resolutionHorizontal-1}
-    var createWallByFunction = function(
+    var createWallByFunction = function (
         holes,
         wallFunction,
         resolutionHorizontal,
@@ -146,9 +146,9 @@ var tunnlejs = (function() {
         direction
     ) {
         var triangles = [];
-        var closureVertices = [];
 
-        var closure = { left: [], right: [], top: [], bottom: [] };
+        resolutionHorizontal = parseInt(resolutionHorizontal);
+        resolutionVertical = parseInt(resolutionVertical);
 
         for (var h = 0; h < resolutionVertical; h++) {
             for (var i = 0; i < resolutionHorizontal; i++) {
@@ -207,7 +207,7 @@ var tunnlejs = (function() {
         return { triangles, closureSets: createClosureSets(holes) };
     };
 
-    var isInHole = function(holes, x, y) {
+    var isInHole = function (holes, x, y) {
         for (var i = 1; i < holes.length; i++) {
             var hole = holes[i];
             if (
@@ -222,7 +222,7 @@ var tunnlejs = (function() {
         return false;
     };
 
-    var fillHoles = function(holes, x, y, vertices) {
+    var fillHoles = function (holes, x, y, vertices) {
         for (var i = 0; i < holes.length; i++) {
             if (!holes[i].leftVertices) holes[i].leftVertices = [];
             if (!holes[i].rightVertices) holes[i].rightVertices = [];
@@ -265,7 +265,7 @@ var tunnlejs = (function() {
         }
     };
 
-    var createClosureSets = function(holes) {
+    var createClosureSets = function (holes) {
         var closureSets = [];
         for (var i = 0; i < holes.length; i++) {
             if (i == 0)

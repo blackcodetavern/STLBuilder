@@ -5,7 +5,7 @@
                 <div class="text-subtitle2 q-pa-sm col-12">Code</div>
                 <div class="col-12 q-pa-sm">
                     <q-input
-                        style="font-family:monospace"
+                        input-style="font-family:monospace;height:600px;"
                         filled
                         square
                         stack-label
@@ -36,8 +36,7 @@ export default {
     data() {
         return {
             manifolds: manifoldmanager.getAllManifolds(),
-            code:
-                "HerringboneGear(100,10,0)\nHerringboneGear(50,10,10)\nHerringboneGear(25,10,20)"
+            code: `setRotation(0,0,0);\nsetPosition(0,0,0);\nHerringboneGear(100,10,-5);\nsetPosition(18.4,0,0);\nsetRotation(180,9,0);\nHerringboneGear(100,10,-5);\nsetRotation(0,0,0);\nsetPosition(36.8,0,0);\nHerringboneGear(100,10,-5)`
         };
     },
     methods: {
