@@ -18,73 +18,77 @@
                 <div class="col-4 q-pa-sm" style="text-align:center">
                     <q-btn @click="newManifold" color="primary" style="width:100%">New</q-btn>
                 </div>
-                <div class="text-subtitle2 q-pa-sm col-12">Name</div>
-                <div class="col-12 q-pa-sm">
-                    <q-input
-                        filled
-                        square
-                        stack-label
-                        v-model="selectedManifold.name"
-                        label="Name"
-                        dense
-                    />
-                </div>
-                <div class="text-subtitle2 q-pa-sm col-12">Parameters</div>
-                <div
-                    class="col-6 q-pa-sm"
-                    v-for="(parameter, index) in selectedManifold.parameters"
-                    v-bind:key="parameter.id"
-                >
-                    <q-input
-                        filled
-                        square
-                        stack-label
-                        v-model="parameter.value"
-                        :label="parameter.name+'('+parameter.id+')'"
-                        dense
+                <div class="row" v-if="selectedInner!=0">
+                    <div class="text-subtitle2 q-pa-sm col-12">Name</div>
+                    <div class="col-12 q-pa-sm">
+                        <q-input
+                            filled
+                            square
+                            stack-label
+                            v-model="selectedManifold.name"
+                            label="Name"
+                            dense
+                        />
+                    </div>
+                    <div class="text-subtitle2 q-pa-sm col-12">Parameters</div>
+                    <div
+                        class="col-6 q-pa-sm"
+                        v-for="(parameter, index) in selectedManifold.parameters"
+                        v-bind:key="parameter.id"
                     >
-                        <template v-slot:append>
-                            <q-btn round dense flat icon="delete" @click="deleteParameter(index)" />
-                        </template>
-                    </q-input>
-                </div>
-                <div class="col-12 q-pa-sm">
-                    <q-btn @click="newParameter" color="primary">New Parameter</q-btn>
-                </div>
-                <div class="text-subtitle2 q-pa-sm col-12">Inner Wall</div>
-                <div class="col-12 q-pa-sm">
-                    <q-input
-                        style="font-family:monospace"
-                        filled
-                        square
-                        stack-label
-                        type="textarea"
-                        v-model="selectedManifold.innerWallDefinition"
-                        dense
-                    />
-                </div>
+                        <q-input
+                            filled
+                            square
+                            stack-label
+                            v-model="parameter.value"
+                            :label="parameter.name+'('+parameter.id+')'"
+                            dense
+                        >
+                            <template v-slot:append>
+                                <q-btn
+                                    round
+                                    dense
+                                    flat
+                                    icon="delete"
+                                    @click="deleteParameter(index)"
+                                />
+                            </template>
+                        </q-input>
+                    </div>
+                    <div class="col-12 q-pa-sm">
+                        <q-btn @click="newParameter" color="primary">New Parameter</q-btn>
+                    </div>
+                    <div class="text-subtitle2 q-pa-sm col-12">Inner Wall</div>
+                    <div class="col-12 q-pa-sm">
+                        <q-input
+                            style="font-family:monospace"
+                            filled
+                            square
+                            stack-label
+                            type="textarea"
+                            v-model="selectedManifold.innerWallDefinition"
+                            dense
+                        />
+                    </div>
 
-                <div class="text-subtitle2 q-pa-sm">Outer Wall</div>
-                <div class="col-12 q-pa-sm">
-                    <q-input
-                        style="font-family:monospace"
-                        filled
-                        square
-                        stack-label
-                        v-model="selectedManifold.outerWallDefinition"
-                        type="textarea"
-                        dense
-                    />
-                </div>
-                <div class="col-4 q-pa-sm" style="text-align:center">
-                    <q-btn @click="updateView" color="primary" style="width:100%">Update</q-btn>
-                </div>
-                <div class="col-4 q-pa-sm" style="text-align:center;padding-top:15px">
-                    <a
-                        style="width:100%"
-                        :href="'data:application/octet-stream,' + encodeURIComponent(downloadString)"
-                        download="generated.stl"
-                    >Download</a>
+                    <div class="text-subtitle2 q-pa-sm">Outer Wall</div>
+                    <div class="col-12 q-pa-sm">
+                        <q-input
+                            style="font-family:monospace"
+                            filled
+                            square
+                            stack-label
+                            v-model="selectedManifold.outerWallDefinition"
+                            type="textarea"
+                            dense
+                        />
+                    </div>
+                    <div class="col-4 q-pa-sm" style="text-align:center">
+                        <q-btn @click="updateView" color="primary" style="width:100%">Update</q-btn>
+                    </div>
+                    <div class="col-4 q-pa-sm" style="text-align:center;">
+                        <q-btn @click="download" color="primary" style="width:100%">Download</q-btn>
+                    </div>
                 </div>
             </div>
             <q-dialog v-model="newParamDialog" persistent>
@@ -118,6 +122,7 @@
 <script>
 import simple3dloader from "./../3d/simple3dloader";
 import manifoldmanager from "./../3d/manifoldmanager";
+import { saveAs } from "file-saver";
 export default {
     name: "ManifoldBuilder",
     data() {
@@ -139,6 +144,15 @@ export default {
         };
     },
     methods: {
+        download() {
+            var filename = "Generated.stl";
+
+            var blob = new Blob([this.downloadString], {
+                type: "text/plain;charset=utf-8"
+            });
+
+            saveAs(blob, filename);
+        },
         newParameter() {
             this.newParamDialog = true;
             this.newParam = {
@@ -166,6 +180,7 @@ export default {
                 ]
             };
             this.manifolds.push(newManifold);
+            this.selected = newManifold.id;
         },
         updateView: function() {
             this.saveManifold();
