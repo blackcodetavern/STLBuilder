@@ -36,7 +36,18 @@ export default {
     data() {
         return {
             manifolds: manifoldmanager.getAllManifolds(),
-            code: `setRotation(0,0,0);\nsetPosition(0,0,0);\nHerringboneGear(100,10,-5);\nsetPosition(18.4,0,0);\nsetRotation(180,9,0);\nHerringboneGear(100,10,-5);\nsetRotation(0,0,0);\nsetPosition(36.8,0,0);\nHerringboneGear(100,10,-5)`
+            code: `setRotation(0,0,0);
+setPosition(0,0,0);
+HerringboneGear(100,10,-5);
+Pole(40,40,6)
+setPosition(18.4,0,0);
+setRotation(180,9,0);
+HerringboneGear(100,10,-5);
+setRotation(0,0,0);
+Pole(40,40,6)
+setPosition(36.8,0,0);
+HerringboneGear(100,10,-5)
+Pole(40,40,6)`
         };
     },
     methods: {
