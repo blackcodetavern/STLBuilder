@@ -1,6 +1,6 @@
 import tunnlejs from "./../3d/tunnle";
 import simplelinearalgebra from "./simplelinearalgebra";
-var manifoldmanager = (function () {
+var manifoldmanager = (function() {
     var me = {};
 
     me.manifoldArray = [];
@@ -32,11 +32,30 @@ var manifoldmanager = (function () {
         }
     ];
 
-    me.getAllManifolds = function () {
+    var allCodeBlocks = JSON.parse(localStorage.getItem("codeBlocks")) || [
+        {
+            name: "None",
+            id: 0,
+            code: "",
+            parameters: []
+        },
+        {
+            name: "TestFunction",
+            id: 1,
+            code: "",
+            parameters: [{ id: "test", name: "Test", value: 10 }]
+        }
+    ];
+
+    me.getAllManifolds = function() {
         return allManifolds;
     };
 
-    me.getSurfaceWallFunction = function (parameters) {
+    me.getAllCodeBlocks = function() {
+        return allCodeBlocks;
+    };
+
+    me.getSurfaceWallFunction = function(parameters) {
         var f = Function(
             "wallDefinition",
             parameters.map(x => x.id),
@@ -65,19 +84,19 @@ var manifoldmanager = (function () {
         return f;
     };
 
-    me.rotateX = function (v, angleX) {
+    me.rotateX = function(v, angleX) {
         return simplelinearalgebra.rotateVectorX(v, angleX);
-    }
+    };
 
-    me.rotateY = function (v, angleY) {
+    me.rotateY = function(v, angleY) {
         return simplelinearalgebra.rotateVectorY(v, angleY);
-    }
+    };
 
-    me.rotateZ = function (v, angleZ) {
+    me.rotateZ = function(v, angleZ) {
         return simplelinearalgebra.rotateVectorZ(v, angleZ);
-    }
+    };
 
-    me.parseCode = function (code) {
+    me.parseCode = function(code) {
         me.manifoldArray = [];
         setPosition(0, 0, 0);
         setRotation(0, 0, 0);
@@ -85,11 +104,11 @@ var manifoldmanager = (function () {
         return me.createManifold(me.manifoldArray);
     };
 
-    me.createManifold = function (manifoldParts) {
+    me.createManifold = function(manifoldParts) {
         return tunnlejs.createMesh(manifoldParts);
     };
 
-    me.createManifoldPart = function (id) {
+    me.createManifoldPart = function(id) {
         me.manifoldArray = [];
         setPosition(0, 0, 0);
         setRotation(0, 0, 0);
@@ -116,7 +135,7 @@ var manifoldmanager = (function () {
         );
     };
 
-    me.createManifoldByNameAndParameters = function (
+    me.createManifoldByNameAndParameters = function(
         name,
         parameters,
         parameterNames
@@ -146,28 +165,37 @@ var manifoldmanager = (function () {
             parameters[1]
         );
     };
-    me.rebuildLanguage = function () {
+    me.rebuildLanguage = function() {
         for (var i = 0; i < allManifolds.length; i++) {
             var currentManifold = allManifolds[i];
             window[currentManifold.name] = Function(
                 currentManifold.parameters.map(x => x.id),
                 `this.manifoldArray.push(this.createManifoldByNameAndParameters("` +
-                currentManifold.name +
-                `", [` +
-                currentManifold.parameters.map(x => x.id).join(",") +
-                `],["` +
-                currentManifold.parameters.map(x => x.id).join('","') +
-                `"]));`
+                    currentManifold.name +
+                    `", [` +
+                    currentManifold.parameters.map(x => x.id).join(",") +
+                    `],["` +
+                    currentManifold.parameters.map(x => x.id).join('","') +
+                    `"]));`
             ).bind(me);
         }
-        window.setPosition = function (x, y, z) {
-            me.positionVector = [x, y, z];
+
+        for (var i = 0; i < allCodeBlocks.length; i++) {
+            var currentCodeBlock = allCodeBlocks[i];
+            window[currentCodeBlock.name] = Function(
+                currentCodeBlock.parameters.map(x => x.id),
+                currentCodeBlock.code
+            ).bind(me);
         }
 
-        window.setRotation = function (x, y, z) {
+        window.setPosition = function(x, y, z) {
+            me.positionVector = [x, y, z];
+        };
+
+        window.setRotation = function(x, y, z) {
             me.rotationAngles = [x, y, z];
-        }
-    }
+        };
+    };
 
     return me;
 })();
