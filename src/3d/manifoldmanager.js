@@ -8,6 +8,9 @@ var manifoldmanager = (function() {
     me.positionVector = [0, 0, 0];
     me.rotationAngles = [0, 0, 0];
 
+    me.globalPositionVector = [0, 0, 0];
+    me.globalRotationAngles = [0, 0, 0];
+
     var allManifolds = JSON.parse(localStorage.getItem("manifolds")) || [
         {
             name: "None",
@@ -72,10 +75,10 @@ var manifoldmanager = (function() {
                 var x=0,y=0,z=0;
                 eval(wallDefinition);
                 var vec = {x,y,z}
-                vec = this.rotateX(vec,this.rotationAngles[0]);
-                vec = this.rotateY(vec,this.rotationAngles[1]);
-                vec = this.rotateZ(vec,this.rotationAngles[2]);
-                return { x:vec.x + this.positionVector[0],y: vec.y + this.positionVector[1], z:vec.z + this.positionVector[2] };
+                vec = this.rotateX(vec,this.globalRotationAngles[0]+this.rotationAngles[0]);
+                vec = this.rotateY(vec,this.globalRotationAngles[1]+this.rotationAngles[1]);
+                vec = this.rotateZ(vec,this.globalRotationAngles[2]+this.rotationAngles[2]);
+                return { x:vec.x + this.globalPositionVector[0] + this.positionVector[0],y: vec.y + this.globalPositionVector[1] + this.positionVector[1], z:vec.z + this.globalPositionVector[2] + this.positionVector[2] };
             };
             fun = fun.bind(this);
             return fun`
@@ -194,6 +197,16 @@ var manifoldmanager = (function() {
 
         window.setRotation = function(x, y, z) {
             me.rotationAngles = [x, y, z];
+        };
+
+        window.setGlobalPosition = function(x, y, z) {
+            me.positionVector = [0, 0, 0];
+            me.globalPositionVector = [x, y, z];
+        };
+
+        window.setGlobalRotation = function(x, y, z) {
+            me.rotationAngles = [0, 0, 0];
+            me.globalRotationAngles = [x, y, z];
         };
     };
 
