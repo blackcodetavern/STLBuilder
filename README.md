@@ -1,6 +1,8 @@
 # stlbuilder
 STLBuilder is a program that allows you to program 3D objects with Javascript. These objects can then be downloaded as STL.
 
+This software depends mainly on vuejs, quasar-framework and threejs.
+
 # ToDo
 - More examples
 - Autocentering of objects
