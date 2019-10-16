@@ -19,7 +19,7 @@ export default new Router({
                 },
                 {
                     path: "/sceneBuilder",
-                    name: "home",
+                    name: "code",
                     component: SceneBuilder
                 }
             ]

@@ -45,7 +45,7 @@
                             dense
                         >
                             <template v-slot:append>
-                                <q-btn
+                                <q-btn v-if="parameter.id!='vS' && parameter.id!='hS'"
                                     round
                                     dense
                                     flat
