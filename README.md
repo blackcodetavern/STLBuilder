@@ -1,12 +1,12 @@
 # stlbuilder
+STLBuilder is a program that allows you to program 3D objects with Javascript. These objects can then be downloaded as STL.
 
+This software depends mainly on vuejs, quasar-framework and threejs.
 
 # ToDo
-
-- Download big STLs via Blob
-- Code-Manifolds which have parameters and code which creates basic manifolds
-- When executing code of a manifold it has to add the manifold to an array instead of returning
-the part
+- More examples
+- Autocentering of objects
+- Import of STL's
 
 
 ## Project setup
@@ -23,16 +23,3 @@ npm run serve
 ```
 npm run build
 ```
-
-### Run your tests
-```
-npm run test
-```
-
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
