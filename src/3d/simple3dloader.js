@@ -116,12 +116,11 @@ function simple3dloader() {
         camera.updateProjectionMatrix();
         canvas.style.width = "0";
         canvas.style.height = "0";
-        canvas.style.width = "100%";
-        canvas.style.height = "600px";
-        var size = Math.min(canvas.offsetWidth, 600);
-        camera.aspect = 1;
+        canvas.style.width = (window.innerWidth - 56) + "px";
+        canvas.style.height = (window.innerHeight - 50) + "px";
+        camera.aspect = (window.innerWidth - 56 - 20) / (window.innerHeight - 50 - 20);
 
-        renderer.setSize(size, size);
+        renderer.setSize(window.innerWidth - 56 - 20, window.innerHeight - 50 - 20);
 
         render();
     }

@@ -1,6 +1,11 @@
 <template>
-    <div class="row">
-        <div class="col-4">
+    <q-page>
+        <div style="position:absolute;left:0px;top:0px;">
+            <canvas id="canv"></canvas>
+        </div>
+        <div
+            style="position:absolute;top:0;left:0;width:500px;overflow:auto;background-color:rgba(0,0,0,.05);height:calc(100vh - 50px) !important"
+        >
             <div class="row">
                 <div class="col-8 q-pa-sm">
                     <q-select
@@ -45,7 +50,8 @@
                             dense
                         >
                             <template v-slot:append>
-                                <q-btn v-if="parameter.id!='vS' && parameter.id!='hS'"
+                                <q-btn
+                                    v-if="parameter.id!='vS' && parameter.id!='hS'"
                                     round
                                     dense
                                     flat
@@ -110,10 +116,7 @@
                 </q-card>
             </q-dialog>
         </div>
-        <div class="col-8 q-pa-sm">
-            <canvas id="canv" style="width:100%;height:600px"></canvas>
-        </div>
-    </div>
+    </q-page>
 </template>
 
 <style>

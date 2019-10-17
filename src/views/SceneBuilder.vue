@@ -1,7 +1,12 @@
 <template>
-    <div class="row">
-        <div class="col-4">
-            <div class="row">
+    <q-page>
+        <div style="position:absolute;left:0px;top:0px;">
+            <canvas id="canv"></canvas>
+        </div>
+        <div
+            style="position:absolute;top:0;left:0;width:500px;overflow:auto;background-color:rgba(0,0,0,.05);height:calc(100vh - 50px) !important"
+        >
+            <div class="row" style>
                 <div class="col-8 q-pa-sm">
                     <q-select
                         option-value="id"
@@ -78,29 +83,26 @@
                     </div>
                 </div>
             </div>
-            <q-dialog v-model="newParamDialog" persistent>
-                <q-card style="min-width: 400px">
-                    <q-card-section>
-                        <div class="text-h6">Your address</div>
-                    </q-card-section>
-
-                    <q-card-section>
-                        <q-input label="Parameter name" v-model="newParam.id" autofocus />
-                        <q-input label="Parameter description" v-model="newParam.name" />
-                        <q-input label="Parameter value" v-model="newParam.value" />
-                    </q-card-section>
-
-                    <q-card-actions align="right" class="text-primary">
-                        <q-btn flat label="Cancel" v-close-popup />
-                        <q-btn flat label="Add" v-close-popup @click="saveParameter" />
-                    </q-card-actions>
-                </q-card>
-            </q-dialog>
         </div>
-        <div class="col-8 q-pa-sm">
-            <canvas id="canv" style="width:100%;height:600px"></canvas>
-        </div>
-    </div>
+        <q-dialog v-model="newParamDialog" persistent>
+            <q-card style="min-width: 400px">
+                <q-card-section>
+                    <div class="text-h6">Your address</div>
+                </q-card-section>
+
+                <q-card-section>
+                    <q-input label="Parameter name" v-model="newParam.id" autofocus />
+                    <q-input label="Parameter description" v-model="newParam.name" />
+                    <q-input label="Parameter value" v-model="newParam.value" />
+                </q-card-section>
+
+                <q-card-actions align="right" class="text-primary">
+                    <q-btn flat label="Cancel" v-close-popup />
+                    <q-btn flat label="Add" v-close-popup @click="saveParameter" />
+                </q-card-actions>
+            </q-card>
+        </q-dialog>
+    </q-page>
 </template>
 
 <style>
