@@ -1,3 +1,9 @@
+<style>
+textarea {
+    white-space: nowrap;
+}
+</style>
+
 <template>
     <q-page>
         <div style="position:absolute;left:0px;top:0px;">
@@ -67,7 +73,7 @@
                     <div class="text-subtitle2 q-pa-sm col-12">Inner Wall</div>
                     <div class="col-12 q-pa-sm">
                         <q-input
-                            style="font-family:monospace"
+                            style="font-family:monospace;"
                             filled
                             square
                             stack-label
@@ -187,6 +193,8 @@ export default {
         },
         updateView: function() {
             this.saveManifold();
+            setGlobalPosition(0, 0, 0);
+            setGlobalRotation(0, 0, 0);
             var loader = new simple3dloader();
             var canvas = document.getElementById("canv");
             loader.init(canvas);
