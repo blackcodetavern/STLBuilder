@@ -1,3 +1,28 @@
+<style>
+::-webkit-scrollbar {
+    width: 5px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+    background: #027be3;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+    background: #027be3;
+}
+
+textarea {
+    white-space: nowrap;
+}
+</style>
+
 <template>
     <q-layout view="hHh Lpr lff">
         <q-header>

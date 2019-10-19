@@ -1,9 +1,3 @@
-<style>
-textarea {
-    white-space: nowrap;
-}
-</style>
-
 <template>
     <q-page>
         <div style="position:absolute;left:0px;top:0px;">
