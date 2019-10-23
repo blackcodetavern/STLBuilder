@@ -1,6 +1,6 @@
 import tunnlejs from "./../3d/tunnle";
 import simplelinearalgebra from "./simplelinearalgebra";
-var manifoldmanager = (function() {
+var manifoldmanager = (function () {
     var me = {};
 
     me.manifoldArray = [];
@@ -21,6 +21,13 @@ var manifoldmanager = (function() {
                 { id: "hS", name: "# Horizontal steps", value: 10 },
                 { id: "vS", name: "# Vertical steps", value: 10 }
             ]
+        },
+        {
+            name: "LemonJuicerHead",
+            id: 10,
+            outerWallDefinition: "x = (40-h*h/10-(i%3<1?(40-h*h/10)/10:0))*sin(2*PI/hS*i)\ny = h*4\nz = (40-h*h/10-(i%3<1?(40-h*h/10)/10:0))*cos(2*PI/hS*i)",
+            innerWallDefinition: "x = 0.9*(40-h*h/10-(i%3<1?(40-h*h/10)/10:0))*sin(2*PI/hS*i)\ny = 0.9*h*4\nz = 0.9*(40-h*h/10-(i%3<1?(40-h*h/10)/10:0))*cos(2*PI/hS*i)",
+            parameters: [{ "id": "hS", "name": "# Horizontal steps", "value": "30" }, { "id": "vS", "name": "# Vertical steps", "value": "20" }]
         },
         {
             name: "HerringboneGear",
@@ -175,18 +182,24 @@ var manifoldmanager = (function() {
             id: 5,
             code: "FlowerPot(120,15,50)\nPlate(120,3,50)",
             parameters: []
+        },
+        {
+            name: "LemonJuicer",
+            id: 6,
+            code: "LemonJuicerHead(50,20)\n\nsetPosition(0,6,0)\nPole(60,12,100)\n\nsetPosition(0,3,0)\nPole(60,6,70)\n\nsetPosition(0,3,0)\nPole(60,6,41)\n\nfor(var i = 0;i<50;i++){\nsetPosition(Math.cos(2*Math.PI/50*i)*67,2.5,Math.sin(2*Math.PI/50*i)*67)\nsetRotation(40,-360/50*i,0)\nBox(63,6,2)\n}",
+            parameters: []
         }
     ];
 
-    me.getAllManifolds = function() {
+    me.getAllManifolds = function () {
         return allManifolds;
     };
 
-    me.getAllCodeBlocks = function() {
+    me.getAllCodeBlocks = function () {
         return allCodeBlocks;
     };
 
-    me.getSurfaceWallFunction = function(parameters) {
+    me.getSurfaceWallFunction = function (parameters) {
         var f = Function(
             "wallDefinition",
             parameters.map(x => x.id),
@@ -215,19 +228,19 @@ var manifoldmanager = (function() {
         return f;
     };
 
-    me.rotateX = function(v, angleX) {
+    me.rotateX = function (v, angleX) {
         return simplelinearalgebra.rotateVectorX(v, angleX);
     };
 
-    me.rotateY = function(v, angleY) {
+    me.rotateY = function (v, angleY) {
         return simplelinearalgebra.rotateVectorY(v, angleY);
     };
 
-    me.rotateZ = function(v, angleZ) {
+    me.rotateZ = function (v, angleZ) {
         return simplelinearalgebra.rotateVectorZ(v, angleZ);
     };
 
-    me.parseCode = function(code) {
+    me.parseCode = function (code) {
         me.manifoldArray = [];
         setPosition(0, 0, 0);
         setRotation(0, 0, 0);
@@ -235,11 +248,11 @@ var manifoldmanager = (function() {
         return me.createManifold(me.manifoldArray);
     };
 
-    me.createManifold = function(manifoldParts) {
+    me.createManifold = function (manifoldParts) {
         return tunnlejs.createMesh(manifoldParts);
     };
 
-    me.createManifoldPart = function(id) {
+    me.createManifoldPart = function (id) {
         me.manifoldArray = [];
         setPosition(0, 0, 0);
         setRotation(0, 0, 0);
@@ -266,7 +279,7 @@ var manifoldmanager = (function() {
         );
     };
 
-    me.createManifoldByNameAndParameters = function(
+    me.createManifoldByNameAndParameters = function (
         name,
         parameters,
         parameterNames
@@ -296,18 +309,18 @@ var manifoldmanager = (function() {
             parameters[1]
         );
     };
-    me.rebuildLanguage = function() {
+    me.rebuildLanguage = function () {
         for (var i = 0; i < allManifolds.length; i++) {
             var currentManifold = allManifolds[i];
             window[currentManifold.name] = Function(
                 currentManifold.parameters.map(x => x.id),
                 `this.manifoldArray.push(this.createManifoldByNameAndParameters("` +
-                    currentManifold.name +
-                    `", [` +
-                    currentManifold.parameters.map(x => x.id).join(",") +
-                    `],["` +
-                    currentManifold.parameters.map(x => x.id).join('","') +
-                    `"]));`
+                currentManifold.name +
+                `", [` +
+                currentManifold.parameters.map(x => x.id).join(",") +
+                `],["` +
+                currentManifold.parameters.map(x => x.id).join('","') +
+                `"]));`
             ).bind(me);
         }
 
@@ -319,20 +332,20 @@ var manifoldmanager = (function() {
             ).bind(me);
         }
 
-        window.setPosition = function(x, y, z) {
+        window.setPosition = function (x, y, z) {
             me.positionVector = [x, y, z];
         };
 
-        window.setRotation = function(x, y, z) {
+        window.setRotation = function (x, y, z) {
             me.rotationAngles = [x, y, z];
         };
 
-        window.setGlobalPosition = function(x, y, z) {
+        window.setGlobalPosition = function (x, y, z) {
             me.positionVector = [0, 0, 0];
             me.globalPositionVector = [x, y, z];
         };
 
-        window.setGlobalRotation = function(x, y, z) {
+        window.setGlobalRotation = function (x, y, z) {
             me.rotationAngles = [0, 0, 0];
             me.globalRotationAngles = [x, y, z];
         };

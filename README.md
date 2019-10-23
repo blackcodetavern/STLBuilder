@@ -9,6 +9,7 @@ Running example: [LINK](https://codeaixtreme.de/stlbuilder/)
 # Screenshots
 
 ![alt Screenshot1](screens/manifoldbuilder1.PNG)
+![alt Screenshot4](screens/codeeditor5.PNG)
 ![alt Screenshot2](screens/codeeditor1.PNG)
 ![alt Screenshot3](screens/codeeditor2.PNG)
 ![alt Screenshot4](screens/codeeditor3.PNG)
