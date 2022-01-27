@@ -15,7 +15,7 @@
         "vue": "^2.6.10",
         "vue-router": "^3.0.3",
         "vuex": "^3.0.1",
-        "three": "0.105.2",
+        "three": "0.137.0",
         "file-saver": "2.0.2"
     },
     "devDependencies": {
